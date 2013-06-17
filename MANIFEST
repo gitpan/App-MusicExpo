@@ -1,0 +1,11 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/App-MusicExpo.t
+lib/App/MusicExpo.pm
+musicexpo
+index.tmpl
+empty.mp3
+empty.flac
+META.yml                                 Module meta-data (added by MakeMaker)

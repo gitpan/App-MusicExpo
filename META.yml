@@ -1,0 +1,27 @@
+--- #YAML:1.0
+name:               App-MusicExpo
+version:            0.001
+abstract:           script which generates a HTML table of music tags
+author:
+    - Marius Gavrilescu <marius@ieval.ro>
+license:            perl
+distribution_type:  module
+configure_requires:
+    ExtUtils::MakeMaker:  0
+build_requires:
+    ExtUtils::MakeMaker:  0
+requires:
+    Audio::FLAC::Header:  0
+    HTML::Entities:       0
+    HTML::Template::Compiled:  0
+    Memoize:              0
+    MP3::Tag:             0
+    URI::Escape:          0
+no_index:
+    directory:
+        - t
+        - inc
+generated_by:       ExtUtils::MakeMaker version 6.57_05
+meta-spec:
+    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
+    version:  1.4

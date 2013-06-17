@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<title>Music</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="/music.css"> 
+
+<table border>
+<thead>
+<tr><th>Title<th>Artist<th>Album<th>Genre<th>Track<th>Year<th>Type
+<tbody><tmpl_loop files>
+<tr><td><a href="<tmpl_var path>"><tmpl_var title></a><td><tmpl_var artist><td><tmpl_var album><td><tmpl_var genre><td><tmpl_var tracknumber>/<tmpl_var tracktotal><td><tmpl_var year><td><tmpl_var format></tmpl_loop>
+</table>

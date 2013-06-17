@@ -1,0 +1,40 @@
+App-MusicExpo version 0.001
+==========================
+
+App::MusicExpo creates a HTML table from a list of songs.
+
+The default template (named index.tmpl here)looks like:
+
+    | Title   | Artist  | Album           | Genre   | Track | Year | Type |
+    |---------+---------+-----------------+---------+-------+------+------|
+    | Cellule | Silence | L'autre endroit | Electro | 01/09 | 2005 | FLAC |
+
+where the title is a download link.
+
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+DEPENDENCIES
+
+This module requires these other modules and libraries:
+
+  * Audio::FLAC::Header
+  * HTML::Entities
+  * HTML::Template::Compiled
+  * Memoize
+  * MP3::Tag
+  * URI::Escape
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2013 by Marius Gavrilescu
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.14.2 or,
+at your option, any later version of Perl 5 you may have available.
