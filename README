@@ -1,5 +1,5 @@
-App-MusicExpo version 0.001001
-==========================
+App-MusicExpo version 0.002
+===========================
 
 App::MusicExpo creates a HTML table from a list of songs.
 
@@ -25,11 +25,9 @@ DEPENDENCIES
 This module requires these other modules and libraries:
 
   * Audio::FLAC::Header
-  * HTML::Entities
   * HTML::Template::Compiled
   * Memoize
   * MP3::Tag
-  * URI::Escape
 
 COPYRIGHT AND LICENCE
 

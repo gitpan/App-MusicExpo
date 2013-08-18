@@ -1,5 +1,14 @@
-App::MusicExpo (0.001) 17 Jun 2013
-  * Initial release
-App::MusicExpo (0.001001) 18 Jun 2013
-  * Add EXE_FILES, MIN_PERL_VERSION
-  * Depend on DB_File
+Revision history for Perl extension App::MusicExpo.
+
+0.002 Sun 18 Aug 10:41:44 EEST 2013
+	* Depend on less modules
+	* Move default format inside the module
+	* Do not cache by default
+	* Change musicexpo's command-line arguments
+	* Depend on a newer MP3::Tag
+	* Write more tests
+0.001001 18 Jun 2013
+	* Add EXE_FILES, MIN_PERL_VERSION
+	* Depend on DB_File
+0.001 17 Jun 2013
+	* Initial release

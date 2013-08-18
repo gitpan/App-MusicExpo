@@ -1,13 +1,12 @@
-package App::MusicExpo 0.001;
+package App::MusicExpo 0.002;
 use v5.14;
+use strict;
 use warnings;
 
 use Audio::FLAC::Header qw//;
-use HTML::Entities qw/encode_entities/;
 use HTML::Template::Compiled qw//;
 use Memoize qw/memoize/;
 use MP3::Tag qw//;
-use URI::Escape qw/uri_escape/;
 
 use DB_File qw//;
 use File::Basename qw/fileparse/;
@@ -17,28 +16,28 @@ use Storable qw/thaw freeze/;
 
 ##################################################
 
+my $default_template;
+
 our $prefix='/music/';
-our $cache='cache.db';
-our $caching=1;
-our $template='index.tmpl';
+our $cache='';
+our $template='';
 
 GetOptions (
   "template=s" => \$template,
   "prefix=s" => \$prefix,
   "cache=s" => \$cache,
-  "caching!" => \$caching,
 );
 
 
 sub fix{
   utf8::decode($_[0]);
-  encode_entities($_[0])
+  $_[0]
 }
 
 sub flacinfo{
   my $file=$_[0];
   my $flac=Audio::FLAC::Header->new($file);
-  $file = $prefix . uri_escape scalar fileparse $file;
+  $file = $prefix . scalar fileparse $file;
 
   freeze +{
 	format => 'FLAC',
@@ -56,7 +55,7 @@ sub flacinfo{
 sub mp3info{
   my $file=$_[0];
   my $mp3=MP3::Tag->new($file);
-  $file = $prefix . uri_escape scalar fileparse $file;
+  $file = $prefix . scalar fileparse $file;
 
   freeze +{
 	format => 'MP3',
@@ -76,9 +75,9 @@ sub normalizer{
 }
 
 sub run {
-  tie my %cache, 'DB_File', $cache, O_RDWR|O_CREAT, 0644 if $caching;
-  memoize 'flacinfo', NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] if $caching;
-  memoize 'mp3info' , NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] if $caching;
+  tie my %cache, 'DB_File', $cache, O_RDWR|O_CREAT, 0644 unless $cache eq '';
+  memoize 'flacinfo', NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] unless $cache eq '';
+  memoize 'mp3info' , NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] unless $cache eq '';
 
   my @files;
   for my $file (@ARGV) {
@@ -86,10 +85,27 @@ sub run {
 	push @files, thaw mp3info $file if $file =~ /.mp3$/i;
   }
 
-  my $ht=HTML::Template::Compiled->new(filename => $template);
+  my $ht=HTML::Template::Compiled->new(
+	default_escape => 'HTML',
+	$template eq '' ? (scalarref => \$default_template) : (filename => $template),
+  );
   $ht->param(files=>[sort { $a->{title} cmp $b->{title} } @files]);
   print $ht->output;
 }
+
+$default_template = <<'HTML';
+<!DOCTYPE html>
+<title>Music</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="/music.css">
+
+<table border>
+<thead>
+<tr><th>Title<th>Artist<th>Album<th>Genre<th>Track<th>Year<th>Type
+<tbody><tmpl_loop files>
+<tr><td><a href="<tmpl_var ESCAPE=URL path>"><tmpl_var title></a><td><tmpl_var artist><td><tmpl_var album><td><tmpl_var genre><td><tmpl_var tracknumber>/<tmpl_var tracktotal><td><tmpl_var year><td><tmpl_var format></tmpl_loop>
+</table>
+HTML
 
 1;
 
@@ -122,7 +138,7 @@ where the title is a download link.
 
 =item B<--template> I<template>
 
-Path to the HTML::Template::Compiled template used for generating the music table. Defaults to 'index.tmpl'.
+Path to the HTML::Template::Compiled template used for generating the music table. If '' (empty), uses the default format. Is empty by default.
 
 =item B<--prefix> I<prefix>
 
@@ -130,11 +146,7 @@ Prefix for download links. Defaults to '/music/'.
 
 =item B<--cache> I<filename>
 
-Path to the cache file. Created if it does not exist. Defaults to 'cache.db'
-
-=item B<--caching>, B<--no-caching>
-
-Enables or disables caching. Defaults to B<--caching>
+Path to the cache file. Created if it does not exist. If '' (empty), disables caching. Is empty by default.
 
 =back
 
