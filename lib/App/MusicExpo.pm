@@ -1,12 +1,15 @@
-package App::MusicExpo 0.002;
+package App::MusicExpo;
 use v5.14;
 use strict;
 use warnings;
+
+our $VERSION = 0.003;
 
 use Audio::FLAC::Header qw//;
 use HTML::Template::Compiled qw//;
 use Memoize qw/memoize/;
 use MP3::Tag qw//;
+use Ogg::Vorbis::Header::PurePerl;
 
 use DB_File qw//;
 use File::Basename qw/fileparse/;
@@ -37,7 +40,7 @@ sub fix{
 sub flacinfo{
   my $file=$_[0];
   my $flac=Audio::FLAC::Header->new($file);
-  $file = $prefix . scalar fileparse $file;
+  $file = scalar fileparse $file;
 
   freeze +{
 	format => 'FLAC',
@@ -48,14 +51,14 @@ sub flacinfo{
 	tracknumber => fix ($flac->tags('TRACKNUMBER') // '?'),
 	tracktotal => fix ($flac->tags('TRACKTOTAL') // '?'),
 	genre => fix ($flac->tags('GENRE') // '?'),
-	path => $file,
+	file => $file,
   }
 }
 
 sub mp3info{
   my $file=$_[0];
   my $mp3=MP3::Tag->new($file);
-  $file = $prefix . scalar fileparse $file;
+  $file = scalar fileparse $file;
 
   freeze +{
 	format => 'MP3',
@@ -66,7 +69,25 @@ sub mp3info{
 	tracknumber => fix ($mp3->track1 || '?'),
 	tracktotal => fix ($mp3->track2 || '?'),
 	genre => fix ($mp3->genre) || '?',
-	path => $file,
+	file => $file,
+  }
+}
+
+sub vorbisinfo{
+  my $file=$_[0];
+  my $ogg=Ogg::Vorbis::Header::PurePerl->new($file);
+  $file = scalar fileparse $file;
+
+  freeze +{
+	format => 'Vorbis',
+	title => fix($ogg->comment('TITLE') || '?'),
+	artist => fix ($ogg->comment('artist') || '?'),
+	year => fix ($ogg->comment('DATE') || '?'),
+	album => fix ($ogg->comment('ALBUM') || '?'),
+	tracknumber => fix ($ogg->comment('TRACKNUMBER') || '?'),
+	tracktotal => fix ($ogg->comment('TRACKTOTAL') || '?'),
+	genre => fix ($ogg->comment('GENRE')) || '?',
+	file => $file,
   }
 }
 
@@ -78,18 +99,35 @@ sub run {
   tie my %cache, 'DB_File', $cache, O_RDWR|O_CREAT, 0644 unless $cache eq '';
   memoize 'flacinfo', NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] unless $cache eq '';
   memoize 'mp3info' , NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] unless $cache eq '';
+  memoize 'vorbisinfo' , NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] unless $cache eq '';
 
-  my @files;
+  my %files;
   for my $file (@ARGV) {
-	push @files, thaw flacinfo $file if $file =~ /.flac$/i;
-	push @files, thaw mp3info $file if $file =~ /.mp3$/i;
+	my $info;
+	$info = thaw flacinfo $file if $file =~ /.flac$/i;
+	$info = thaw mp3info $file if $file =~ /.mp3$/i;
+	$info = thaw vorbisinfo $file if $file =~ /.og(?:g|a)$/i;
+	next unless defined $info;
+	my $basename = fileparse $file, '.flac', '.mp3', '.ogg', '.oga';
+	$files{$basename} //= [];
+	push $files{$basename}, $info;
   }
 
   my $ht=HTML::Template::Compiled->new(
 	default_escape => 'HTML',
+	global_vars => 2,
 	$template eq '' ? (scalarref => \$default_template) : (filename => $template),
   );
-  $ht->param(files=>[sort { $a->{title} cmp $b->{title} } @files]);
+
+  my @files;
+  for (values %files) {
+	my @versions = @$_;
+	my %entry = (%{$versions[0]}, formats => []);
+	push $entry{formats}, {format => $_->{format}, file => $_->{file}} for @versions;
+	push @files, \%entry
+  }
+
+  $ht->param(files=>[sort { $a->{title} cmp $b->{title} } @files], prefix => $prefix);
   print $ht->output;
 }
 
@@ -103,7 +141,7 @@ $default_template = <<'HTML';
 <thead>
 <tr><th>Title<th>Artist<th>Album<th>Genre<th>Track<th>Year<th>Type
 <tbody><tmpl_loop files>
-<tr><td><a href="<tmpl_var ESCAPE=URL path>"><tmpl_var title></a><td><tmpl_var artist><td><tmpl_var album><td><tmpl_var genre><td><tmpl_var tracknumber>/<tmpl_var tracktotal><td><tmpl_var year><td><tmpl_var format></tmpl_loop>
+<tr><td><a href=<tmpl_var title><td><tmpl_var artist><td><tmpl_var album><td><tmpl_var genre><td><tmpl_var tracknumber>/<tmpl_var tracktotal><td><tmpl_var year><td><tmpl_loop formats><a href="<tmpl_var ...prefix><tmpl_var ESCAPE=URL file>"><tmpl_var format></a> </tmpl_loop></tmpl_loop>
 </table>
 HTML
 
@@ -130,7 +168,10 @@ The default template looks like:
     |---------+---------+-----------------+---------+-------+------+------|
     | Cellule | Silence | L'autre endroit | Electro | 01/09 | 2005 | FLAC |
 
-where the title is a download link.
+where the type is a download link. If you have multiple files with the same
+basename (such as C<cellule.flac> and C<cellule.ogg>), they will be treated
+as two versions of the same file, so a row will be created with two download
+links, one for each format.
 
 =head1 OPTIONS
 

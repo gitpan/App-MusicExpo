@@ -32,8 +32,7 @@ is $out, <<'OUT', 'output is correct';
 <thead>
 <tr><th>Title<th>Artist<th>Album<th>Genre<th>Track<th>Year<th>Type
 <tbody>
-<tr><td><a href="%2Fmusic%2Fempty.flac">Cellule</a><td>Silence<td>L&#39;autre endroit<td>Electro<td>01/09<td>2005<td>FLAC
-<tr><td><a href="%2Fmusic%2Fempty.mp3">Cellule</a><td>Silence<td>L&#39;autre endroit<td>Electro<td>01/09<td>2005<td>MP3
+<tr><td><a href=Cellule<td>Silence<td>L&#39;autre endroit<td>Electro<td>01/09<td>2005<td><a href="/music/empty.flac">FLAC</a> <a href="/music/empty.mp3">MP3</a> 
 </table>
 OUT
 

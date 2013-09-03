@@ -9,4 +9,6 @@ lib/App/MusicExpo.pm
 musicexpo
 empty.mp3
 empty.flac
-META.yml                                 Module meta-data (added by MakeMaker)
+empty.ogg
+META.yml                                 Module YAML meta-data (added by MakeMaker)
+META.json                                Module JSON meta-data (added by MakeMaker)
