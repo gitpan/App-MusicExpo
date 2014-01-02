@@ -13,8 +13,15 @@ WriteMakefile(
 	'Ogg::Vorbis::Header::PurePerl' => 0,
   },
   MIN_PERL_VERSION => 5.014,
+  SIGN          => 1,
   EXE_FILES     => [ 'musicexpo' ],
   LICENSE       => 'perl',
   ABSTRACT_FROM => 'lib/App/MusicExpo.pm',
   AUTHOR        => 'Marius Gavrilescu <marius@ieval.ro>',
+  META_MERGE    => {
+	resources   => {
+	  repository => 'http://git.ieval.ro/?p=app-musicexpo.git'
+	},
+	dynamic_config => 0,
+  }
 );

@@ -1,14 +1,27 @@
 Revision history for Perl extension App::MusicExpo.
 
-0.002 Sun 18 Aug 10:41:44 EEST 2013
-	* Depend on less modules
-	* Move default format inside the module
-	* Do not cache by default
-	* Change musicexpo's command-line arguments
-	* Depend on a newer MP3::Tag
-	* Write more tests
-0.001001 18 Jun 2013
-	* Add EXE_FILES, MIN_PERL_VERSION
-	* Depend on DB_File
-0.001 17 Jun 2013
-	* Initial release
+0.003001 2014-01-02T12:33:11
+ - Make empty.ogg longer (RT #91794 and #43693)
+ - Add SIGN => 1 to Makefile.PL
+ - Add repository and dynamic_config: 0 to META
+ - Convert changelog to CPAN::Changes format
+
+0.003 2013-09-03
+ - Support OGG Vorbis
+ - Group files with same basename
+ - URL-escape filenames
+
+0.002 2013-08-18T10:41:44+03:00
+ - Depend on less modules
+ - Move default format inside the module
+ - Do not cache by default
+ - Change musicexpo's command-line arguments
+ - Depend on a newer MP3::Tag
+ - Write more tests
+
+0.001001 2013-06-18
+ - Add EXE_FILES, MIN_PERL_VERSION
+ - Depend on DB_File
+
+0.001 2013-06-17
+ - Initial release

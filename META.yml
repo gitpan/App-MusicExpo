@@ -6,7 +6,7 @@ build_requires:
   ExtUtils::MakeMaker: 0
 configure_requires:
   ExtUtils::MakeMaker: 0
-dynamic_config: 1
+dynamic_config: 0
 generated_by: 'ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.120921'
 license: perl
 meta-spec:
@@ -25,4 +25,6 @@ requires:
   Memoize: 0
   Ogg::Vorbis::Header::PurePerl: 0
   perl: 5.014
-version: 0.003
+resources:
+  repository: http://git.ieval.ro/?p=app-musicexpo.git
+version: 0.003001

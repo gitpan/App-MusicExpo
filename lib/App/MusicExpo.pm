@@ -3,7 +3,7 @@ use v5.14;
 use strict;
 use warnings;
 
-our $VERSION = 0.003;
+our $VERSION = 0.003001;
 
 use Audio::FLAC::Header qw//;
 use HTML::Template::Compiled qw//;
@@ -33,8 +33,9 @@ GetOptions (
 
 
 sub fix{
-  utf8::decode($_[0]);
-  $_[0]
+  my $copy = $_[0];
+  utf8::decode($copy);
+  $copy
 }
 
 sub flacinfo{

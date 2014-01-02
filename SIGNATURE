@@ -1,0 +1,47 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.73.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+SHA1 b80d433a28f6fe33b81abc047dc49ed6024afd0d Changes
+SHA1 e4355f94ed183ffb19ff0e278342d6b8e69ec6ed MANIFEST
+SHA1 9854d0f1215524aa1b7c0ae2e96e944976bd84c0 META.json
+SHA1 b21af20bc1378855fa2f1bf84c985136e6562171 META.yml
+SHA1 9fc934ae7d5bfea337361c90a7442a5b60a75d57 Makefile.PL
+SHA1 beddb74420b8e9def8cc5806d10e01a071ba3163 README
+SHA1 4c9a07c85f911b2633682c4f2f2571bb6763e770 empty.flac
+SHA1 5bb97acab901ba09a62e00ac23eedff120db4f45 empty.mp3
+SHA1 366cb7e1da64b59769c6ff8067f7de5c29ae4567 empty.ogg
+SHA1 28b6776a30cd3108324ae84b186e7fbcac5a6bd0 lib/App/MusicExpo.pm
+SHA1 b09cfcea978491517ee9281a0bb31d62aaecfb8a musicexpo
+SHA1 09db9860b11ebd9dd71ae6a3cc06e78a394cca82 t/App-MusicExpo.t
+SHA1 c357580a87d65e070fa36cf6069dfd5f8ebc241e t/musicexpo-cache.t
+SHA1 5fcbc3371d6b68917f089d2075d638920795e37d t/musicexpo.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.15 (GNU/Linux)
+
+iQIcBAEBCgAGBQJSxUSzAAoJEMoENb5ewbNi+2EQAJkYad/RM5EIwHtIlRalTtXx
+8N2/fPnib3XDjFPSw8FNrz9whcsMh4BjB2Hi0WoETKdLV+C6P/fiENignNnvGaV3
+MkLbZveGa+FexTKRl7Tv7MKHnipWKSFRZiDSnUZ5/Iz9OnD4uZGnfiSrMyblLUr2
+Y5qoSqJ2Ibfd4JlwpR1nEdd8OMo8Sm7BdBO93PyCf+AiZFaSyHCaaPbYzbLv/ulZ
+SgRohkuC6bHcBJxSszEDDnO9r8xOuBZnIqCOPX49yJ2vKn0JxMpz7VicbKqZaWje
+sigYyU1V2LC6xCYFNYj/7ybBQudjPz98VXFiIjhZGHp86ivAgfeqfGszI+BXBT0B
+XxECPi5CiccnVXJd3Tle1CJMbd7Ifv+7QsKy3zwwDg8enFuIunDgWJot84p39jFm
+/U0pUqAPuX74ZU6Oy/s48HWXeG0OWr+xkR4Iuf8lNoV/CtpGTzkTU29lVbvxA8pP
+UMiZw3ZSnsTLOaMd4M8T0qzqyYWiZqUIjHBuc8+UQw0YojJoFiioiWy80sHlAniU
+8ODJINMLCrDymrn7/xccgV2tISnM/ftSbzn9mHYzwu+ferNGTvCJlkYV44p5oSC8
+AvmbHY66rqHsucrySGV9Vrefzunr0R5SLMNFCTDF16+JabQGFWi2L+ePPFyJc4Nt
+jz83Is9pvmB3P3q74eTA
+=MAXT
+-----END PGP SIGNATURE-----
