@@ -3,7 +3,7 @@ use v5.14;
 use strict;
 use warnings;
 
-our $VERSION = 0.003001;
+our $VERSION = '0.003002';
 
 use Audio::FLAC::Header qw//;
 use HTML::Template::Compiled qw//;
@@ -15,6 +15,7 @@ use DB_File qw//;
 use File::Basename qw/fileparse/;
 use Fcntl qw/O_RDWR O_CREAT/;
 use Getopt::Long;
+use JSON;
 use Storable qw/thaw freeze/;
 
 ##################################################
@@ -26,110 +27,113 @@ our $cache='';
 our $template='';
 
 GetOptions (
-  "template=s" => \$template,
-  "prefix=s" => \$prefix,
-  "cache=s" => \$cache,
+	"template:s" => \$template,
+	"prefix:s" => \$prefix,
+	"cache:s" => \$cache,
 );
 
 
 sub fix{
-  my $copy = $_[0];
-  utf8::decode($copy);
-  $copy
+	my $copy = $_[0];
+	utf8::decode($copy);
+	$copy
 }
 
 sub flacinfo{
-  my $file=$_[0];
-  my $flac=Audio::FLAC::Header->new($file);
-  $file = scalar fileparse $file;
+	my $file=$_[0];
+	my $flac=Audio::FLAC::Header->new($file);
+	$file = scalar fileparse $file;
 
-  freeze +{
-	format => 'FLAC',
-	title => fix ($flac->tags('TITLE') // '?'),
-	artist => fix ($flac->tags('ARTIST') // '?'),
-	year => fix ($flac->tags('DATE') // '?'),
-	album => fix ($flac->tags('ALBUM') // '?'),
-	tracknumber => fix ($flac->tags('TRACKNUMBER') // '?'),
-	tracktotal => fix ($flac->tags('TRACKTOTAL') // '?'),
-	genre => fix ($flac->tags('GENRE') // '?'),
-	file => $file,
-  }
+	freeze +{
+		format => 'FLAC',
+		title => fix ($flac->tags('TITLE') // '?'),
+		artist => fix ($flac->tags('ARTIST') // '?'),
+		year => fix ($flac->tags('DATE') // '?'),
+		album => fix ($flac->tags('ALBUM') // '?'),
+		tracknumber => fix ($flac->tags('TRACKNUMBER') // '?'),
+		tracktotal => fix ($flac->tags('TRACKTOTAL') // '?'),
+		genre => fix ($flac->tags('GENRE') // '?'),
+		file => $file,
+	}
 }
 
 sub mp3info{
-  my $file=$_[0];
-  my $mp3=MP3::Tag->new($file);
-  $file = scalar fileparse $file;
+	my $file=$_[0];
+	my $mp3=MP3::Tag->new($file);
+	$file = scalar fileparse $file;
 
-  freeze +{
-	format => 'MP3',
-	title => fix ($mp3->title || '?'),
-	artist => fix ($mp3->artist || '?'),
-	year => fix ($mp3->year || '?'),
-	album => fix ($mp3->album || '?'),
-	tracknumber => fix ($mp3->track1 || '?'),
-	tracktotal => fix ($mp3->track2 || '?'),
-	genre => fix ($mp3->genre) || '?',
-	file => $file,
-  }
+	freeze +{
+		format => 'MP3',
+		title => fix ($mp3->title || '?'),
+		artist => fix ($mp3->artist || '?'),
+		year => fix ($mp3->year || '?'),
+		album => fix ($mp3->album || '?'),
+		tracknumber => fix ($mp3->track1 || '?'),
+		tracktotal => fix ($mp3->track2 || '?'),
+		genre => fix ($mp3->genre) || '?',
+		file => $file,
+	}
 }
 
 sub vorbisinfo{
-  my $file=$_[0];
-  my $ogg=Ogg::Vorbis::Header::PurePerl->new($file);
-  $file = scalar fileparse $file;
+	my $file=$_[0];
+	my $ogg=Ogg::Vorbis::Header::PurePerl->new($file);
+	$file = scalar fileparse $file;
 
-  freeze +{
-	format => 'Vorbis',
-	title => fix($ogg->comment('TITLE') || '?'),
-	artist => fix ($ogg->comment('artist') || '?'),
-	year => fix ($ogg->comment('DATE') || '?'),
-	album => fix ($ogg->comment('ALBUM') || '?'),
-	tracknumber => fix ($ogg->comment('TRACKNUMBER') || '?'),
-	tracktotal => fix ($ogg->comment('TRACKTOTAL') || '?'),
-	genre => fix ($ogg->comment('GENRE')) || '?',
-	file => $file,
-  }
+	freeze +{
+		format => 'Vorbis',
+		title => fix($ogg->comment('TITLE') || '?'),
+		artist => fix ($ogg->comment('artist') || '?'),
+		year => fix ($ogg->comment('DATE') || '?'),
+		album => fix ($ogg->comment('ALBUM') || '?'),
+		tracknumber => fix ($ogg->comment('TRACKNUMBER') || '?'),
+		tracktotal => fix ($ogg->comment('TRACKTOTAL') || '?'),
+		genre => fix ($ogg->comment('GENRE')) || '?',
+		file => $file,
+	}
 }
 
 sub normalizer{
-  "$_[0]|".(stat $_[0])[9]
+	"$_[0]|".(stat $_[0])[9]
 }
 
 sub run {
-  tie my %cache, 'DB_File', $cache, O_RDWR|O_CREAT, 0644 unless $cache eq '';
-  memoize 'flacinfo', NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] unless $cache eq '';
-  memoize 'mp3info' , NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] unless $cache eq '';
-  memoize 'vorbisinfo' , NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] unless $cache eq '';
+	tie my %cache, 'DB_File', $cache, O_RDWR|O_CREAT, 0644 unless $cache eq '';
+	memoize 'flacinfo', NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] unless $cache eq '';
+	memoize 'mp3info' , NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] unless $cache eq '';
+	memoize 'vorbisinfo' , NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] unless $cache eq '';
 
-  my %files;
-  for my $file (@ARGV) {
-	my $info;
-	$info = thaw flacinfo $file if $file =~ /.flac$/i;
-	$info = thaw mp3info $file if $file =~ /.mp3$/i;
-	$info = thaw vorbisinfo $file if $file =~ /.og(?:g|a)$/i;
-	next unless defined $info;
-	my $basename = fileparse $file, '.flac', '.mp3', '.ogg', '.oga';
-	$files{$basename} //= [];
-	push $files{$basename}, $info;
-  }
+	my %files;
+	for my $file (@ARGV) {
+		my $info;
+		$info = thaw flacinfo $file if $file =~ /.flac$/i;
+		$info = thaw mp3info $file if $file =~ /.mp3$/i;
+		$info = thaw vorbisinfo $file if $file =~ /.og(?:g|a)$/i;
+		next unless defined $info;
+		my $basename = fileparse $file, '.flac', '.mp3', '.ogg', '.oga';
+		$files{$basename} //= [];
+		push $files{$basename}, $info;
+	}
 
-  my $ht=HTML::Template::Compiled->new(
-	default_escape => 'HTML',
-	global_vars => 2,
-	$template eq '' ? (scalarref => \$default_template) : (filename => $template),
-  );
+	my $ht=HTML::Template::Compiled->new(
+		default_escape => 'HTML',
+		global_vars => 2,
+		$template eq '' ? (scalarref => \$default_template) : (filename => $template),
+	);
 
-  my @files;
-  for (values %files) {
-	my @versions = @$_;
-	my %entry = (%{$versions[0]}, formats => []);
-	push $entry{formats}, {format => $_->{format}, file => $_->{file}} for @versions;
-	push @files, \%entry
-  }
+	my @files;
+	for (values %files) {
+		my @versions = @$_;
+		my %entry = (%{$versions[0]}, formats => []);
+		push $entry{formats}, {format => $_->{format}, file => $_->{file}} for @versions;
+		push @files, \%entry
+	}
 
-  $ht->param(files=>[sort { $a->{title} cmp $b->{title} } @files], prefix => $prefix);
-  print $ht->output;
+	my $json = JSON->new->utf8->canonical->encode({files => \@files, prefix => $prefix});
+	$json =~ s/</&lt;/g;
+	$json =~ s/>/&gt;/g;
+	$ht->param(files=>[sort { $a->{title} cmp $b->{title} } @files], prefix => $prefix, json => $json);
+	print $ht->output;
 }
 
 $default_template = <<'HTML';
@@ -142,13 +146,17 @@ $default_template = <<'HTML';
 <thead>
 <tr><th>Title<th>Artist<th>Album<th>Genre<th>Track<th>Year<th>Type
 <tbody><tmpl_loop files>
-<tr><td><a href=<tmpl_var title><td><tmpl_var artist><td><tmpl_var album><td><tmpl_var genre><td><tmpl_var tracknumber>/<tmpl_var tracktotal><td><tmpl_var year><td><tmpl_loop formats><a href="<tmpl_var ...prefix><tmpl_var ESCAPE=URL file>"><tmpl_var format></a> </tmpl_loop></tmpl_loop>
+<tr><td><tmpl_var title><td><tmpl_var artist><td><tmpl_var album><td><tmpl_var genre><td><tmpl_var tracknumber>/<tmpl_var tracktotal><td><tmpl_var year><td><tmpl_loop formats><a href="<tmpl_var ...prefix><tmpl_var ESCAPE=URL file>"><tmpl_var format></a> </tmpl_loop></tmpl_loop>
 </table>
+
+<pre id="json" style="display: none"><tmpl_var ESCAPE=0 json></pre>
 HTML
 
 1;
 
 __END__
+
+=encoding utf-8
 
 =head1 NAME
 
@@ -198,7 +206,7 @@ Marius Gavrilescu, E<lt>marius@ieval.roE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2013 by Marius Gavrilescu
+Copyright (C) 2013-2014 by Marius Gavrilescu
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.14.2 or,

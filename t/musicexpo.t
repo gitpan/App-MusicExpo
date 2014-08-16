@@ -25,4 +25,6 @@ is $out, <<'OUT', 'output is correct';
 <tr><th>Title<th>Artist<th>Album<th>Genre<th>Track<th>Year<th>Type
 <tbody>
 </table>
+
+<pre id="json" style="display: none">{"files":[],"prefix":"/music/"}</pre>
 OUT

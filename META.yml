@@ -3,28 +3,28 @@ abstract: 'script which generates a HTML table of music tags'
 author:
   - 'Marius Gavrilescu <marius@ieval.ro>'
 build_requires:
-  ExtUtils::MakeMaker: 0
+  ExtUtils::MakeMaker: '0'
 configure_requires:
-  ExtUtils::MakeMaker: 0
+  ExtUtils::MakeMaker: '0'
 dynamic_config: 0
-generated_by: 'ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.120921'
+generated_by: 'ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.142060'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
-  version: 1.4
+  version: '1.4'
 name: App-MusicExpo
 no_index:
   directory:
     - t
     - inc
 requires:
-  Audio::FLAC::Header: 0
-  DB_File: 0
-  HTML::Template::Compiled: 0
-  MP3::Tag: 1.12
-  Memoize: 0
-  Ogg::Vorbis::Header::PurePerl: 0
-  perl: 5.014
+  Audio::FLAC::Header: '0'
+  DB_File: '0'
+  HTML::Template::Compiled: '0'
+  MP3::Tag: '1.12'
+  Memoize: '0'
+  Ogg::Vorbis::Header::PurePerl: '0'
+  perl: '5.014'
 resources:
   repository: http://git.ieval.ro/?p=app-musicexpo.git
-version: 0.003001
+version: '0.003002'

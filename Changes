@@ -1,5 +1,13 @@
 Revision history for Perl extension App::MusicExpo.
 
+0.003002 2014-08-17T02:05+03:00
+ - CPAN Day cleanup release
+ - Improve musicexpo POD
+ - Set POD encoding to utf-8
+ - Reindent and refactor Makefile.PL
+ - Update README
+ - Update copyright years
+
 0.003001 2014-01-02T12:33:11
  - Make empty.ogg longer (RT #91794 and #43693)
  - Add SIGN => 1 to Makefile.PL

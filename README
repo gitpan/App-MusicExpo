@@ -1,5 +1,5 @@
-App-MusicExpo version 0.002
-===========================
+App-MusicExpo version 0.003002
+==============================
 
 App::MusicExpo creates a HTML table from a list of songs.
 
@@ -9,7 +9,10 @@ The default template (named index.tmpl here)looks like:
     |---------+---------+-----------------+---------+-------+------+------|
     | Cellule | Silence | L'autre endroit | Electro | 01/09 | 2005 | FLAC |
 
-where the title is a download link.
+where the title is a download link. If you have multiple files with the same
+basename (such as C<cellule.flac> and C<cellule.ogg>), they will be treated
+as two versions of the same file, so a row will be created with two download
+links, one for each format.
 
 INSTALLATION
 
@@ -28,10 +31,12 @@ This module requires these other modules and libraries:
   * HTML::Template::Compiled
   * Memoize
   * MP3::Tag
+  * DB_File
+  * Ogg::Vorbis::Header::PurePerl
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2013 by Marius Gavrilescu
+Copyright (C) 2013-2014 by Marius Gavrilescu
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.14.2 or,
