@@ -3,7 +3,7 @@ use v5.14;
 use strict;
 use warnings;
 
-our $VERSION = '0.003002';
+our $VERSION = '0.003003';
 
 use Audio::FLAC::Header qw//;
 use HTML::Template::Compiled qw//;
@@ -15,7 +15,7 @@ use DB_File qw//;
 use File::Basename qw/fileparse/;
 use Fcntl qw/O_RDWR O_CREAT/;
 use Getopt::Long;
-use JSON;
+use JSON::MaybeXS;
 use Storable qw/thaw freeze/;
 
 ##################################################
@@ -129,7 +129,7 @@ sub run {
 		push @files, \%entry
 	}
 
-	my $json = JSON->new->utf8->canonical->encode({files => \@files, prefix => $prefix});
+	my $json = JSON::MaybeXS->new(canonical => 1)->encode({files => \@files, prefix => $prefix});
 	$json =~ s/</&lt;/g;
 	$json =~ s/>/&gt;/g;
 	$ht->param(files=>[sort { $a->{title} cmp $b->{title} } @files], prefix => $prefix, json => $json);

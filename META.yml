@@ -21,10 +21,11 @@ requires:
   Audio::FLAC::Header: '0'
   DB_File: '0'
   HTML::Template::Compiled: '0'
+  JSON::MaybeXS: '0'
   MP3::Tag: '1.12'
   Memoize: '0'
   Ogg::Vorbis::Header::PurePerl: '0'
   perl: '5.014'
 resources:
   repository: http://git.ieval.ro/?p=app-musicexpo.git
-version: '0.003002'
+version: '0.003003'
