@@ -4,7 +4,7 @@
       "Marius Gavrilescu <marius@ieval.ro>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.142060",
+   "generated_by" : "ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.142690",
    "license" : [
       "perl_5"
    ],
@@ -37,6 +37,7 @@
             "HTML::Template::Compiled" : "0",
             "JSON::MaybeXS" : "0",
             "MP3::Tag" : "1.12",
+            "MP4::Info" : "0",
             "Memoize" : "0",
             "Ogg::Vorbis::Header::PurePerl" : "0",
             "perl" : "5.014"
@@ -49,5 +50,5 @@
          "url" : "http://git.ieval.ro/?p=app-musicexpo.git"
       }
    },
-   "version" : "0.003003"
+   "version" : "0.004"
 }

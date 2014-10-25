@@ -1,5 +1,9 @@
 Revision history for Perl extension App::MusicExpo.
 
+0.004 2014-10-25T15:20+03:00
+ - Add MP4 support
+ - Use tags from all versions of a file, not just from the first one
+
 0.003003 2014-09-07T00:56+03:00
  - Switch to JSON::MaybeXS
  - Handle UTF-8 correctly

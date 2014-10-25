@@ -3,13 +3,14 @@ use v5.14;
 use strict;
 use warnings;
 
-our $VERSION = '0.003003';
+our $VERSION = '0.004';
 
 use Audio::FLAC::Header qw//;
 use HTML::Template::Compiled qw//;
 use Memoize qw/memoize/;
 use MP3::Tag qw//;
 use Ogg::Vorbis::Header::PurePerl;
+use MP4::Info qw/get_mp4tag get_mp4info/;
 
 use DB_File qw//;
 use File::Basename qw/fileparse/;
@@ -93,26 +94,53 @@ sub vorbisinfo{
 	}
 }
 
+sub mp4_format ($){
+	my $encoding = $_[0];
+	return 'AAC' if $encoding eq 'mp4a';
+	return 'ALAC' if $encoding eq 'alac';
+	"MP4-$encoding"
+}
+
+sub mp4info{
+	my $file=$_[0];
+	my %tag = %{get_mp4tag $file};
+	my %info = %{get_mp4info $file};
+	$file = scalar fileparse $file;
+
+	freeze +{
+		format => mp4_format $info{ENCODING},
+		title => $tag{TITLE} || '?',
+		artist => $tag{ARTIST} || '?',
+		year => $tag{YEAR} || '?',
+		album => $tag{ALBUM} || '?',
+		tracknumber => $tag{TRACKNUM} || '?',
+		tracktotal => ($tag{TRKN} ? $tag{TRKN}->[1] : undef) || '?',
+		genre => $tag{GENRE} || '?',
+		file => $file,
+	};
+}
+
 sub normalizer{
 	"$_[0]|".(stat $_[0])[9]
 }
 
 sub run {
-	tie my %cache, 'DB_File', $cache, O_RDWR|O_CREAT, 0644 unless $cache eq '';
-	memoize 'flacinfo', NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] unless $cache eq '';
-	memoize 'mp3info' , NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] unless $cache eq '';
-	memoize 'vorbisinfo' , NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] unless $cache eq '';
+	if ($cache) {
+		tie my %cache, 'DB_File', $cache, O_RDWR|O_CREAT, 0644;
+		memoize $_, NORMALIZER => \&normalizer, LIST_CACHE => 'MERGE', SCALAR_CACHE => [HASH => \%cache] for qw/flacinfo mp3info vorbisinfo mp4info/;
+	}
 
 	my %files;
 	for my $file (@ARGV) {
 		my $info;
-		$info = thaw flacinfo $file if $file =~ /.flac$/i;
-		$info = thaw mp3info $file if $file =~ /.mp3$/i;
-		$info = thaw vorbisinfo $file if $file =~ /.og(?:g|a)$/i;
+		$info = thaw flacinfo $file if $file =~ /\.flac$/i;
+		$info = thaw mp3info $file if $file =~ /\.mp3$/i;
+		$info = thaw vorbisinfo $file if $file =~ /\.og(?:g|a)$/i;
+		$info = thaw mp4info $file if $file =~ /\.mp4|\.aac|\.m4a$/i;
 		next unless defined $info;
-		my $basename = fileparse $file, '.flac', '.mp3', '.ogg', '.oga';
+		my $basename = fileparse $file, '.flac', '.mp3', '.ogg', '.oga', '.mp4', '.aac', '.m4a';
 		$files{$basename} //= [];
-		push $files{$basename}, $info;
+		push @{$files{$basename}}, $info;
 	}
 
 	my $ht=HTML::Template::Compiled->new(
@@ -125,7 +153,13 @@ sub run {
 	for (values %files) {
 		my @versions = @$_;
 		my %entry = (%{$versions[0]}, formats => []);
-		push $entry{formats}, {format => $_->{format}, file => $_->{file}} for @versions;
+		for my $ver (@versions) {
+			push @{$entry{formats}}, {format => $ver->{format}, file => $ver->{file}};
+			for my $key (keys %$ver) {
+				$entry{$key} = $ver->{$key} if $ver->{$key} ne '?';
+			}
+		}
+		delete $entry{$_} for qw/format file/;
 		push @files, \%entry
 	}
 

@@ -15,6 +15,7 @@ WriteMakefile(
 		   HTML::Template::Compiled      0
 		   Memoize                       0
 		   MP3::Tag                      1.12
+		   MP4::Info                     0
 		   JSON::MaybeXS                 0
 		   DB_File                       0
 		   Ogg::Vorbis::Header::PurePerl 0/,

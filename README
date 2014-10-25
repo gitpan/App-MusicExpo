@@ -1,5 +1,5 @@
-App-MusicExpo version 0.003002
-==============================
+App-MusicExpo version 0.004
+===========================
 
 App::MusicExpo creates a HTML table from a list of songs.
 
@@ -31,7 +31,8 @@ This module requires these other modules and libraries:
   * HTML::Template::Compiled
   * Memoize
   * MP3::Tag
-  * DB_File
+  * MP4::Info
+  * JSON::MaybeXS
   * Ogg::Vorbis::Header::PurePerl
 
 COPYRIGHT AND LICENCE

@@ -35,7 +35,7 @@ is $out, <<'OUT', 'output is correct';
 <tr><td>Cellule<td>Silence<td>L&#39;autre endroit<td>Electro<td>01/09<td>2005<td><a href="/music/empty.flac">FLAC</a> <a href="/music/empty.mp3">MP3</a> 
 </table>
 
-<pre id="json" style="display: none">{"files":[{"album":"L'autre endroit","artist":"Silence","file":"empty.flac","format":"FLAC","formats":[{"file":"empty.flac","format":"FLAC"},{"file":"empty.mp3","format":"MP3"}],"genre":"Electro","title":"Cellule","tracknumber":"01","tracktotal":"09","year":"2005"}],"prefix":"/music/"}</pre>
+<pre id="json" style="display: none">{"files":[{"album":"L'autre endroit","artist":"Silence","formats":[{"file":"empty.flac","format":"FLAC"},{"file":"empty.mp3","format":"MP3"}],"genre":"Electro","title":"Cellule","tracknumber":"01","tracktotal":"09","year":"2005"}],"prefix":"/music/"}</pre>
 OUT
 
 ok -e $file, 'cache exists';

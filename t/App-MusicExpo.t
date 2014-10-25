@@ -2,7 +2,7 @@
 use v5.14;
 use warnings;
 
-use Test::More tests => 28;
+use Test::More tests => 37;
 
 use Storable qw/thaw/;
 
@@ -11,6 +11,7 @@ BEGIN { use_ok('App::MusicExpo'); }
 my $flacinfo = thaw App::MusicExpo::flacinfo 'empty.flac';
 my $mp3info = thaw App::MusicExpo::mp3info 'empty.mp3';
 my $vorbisinfo = thaw App::MusicExpo::vorbisinfo 'empty.ogg';
+my $mp4info = thaw App::MusicExpo::mp4info 'empty.aac';
 
 is $flacinfo->{format}, 'FLAC', 'flacinfo format';
 is $flacinfo->{title}, 'Cellule', 'flacinfo title';
@@ -41,3 +42,13 @@ is $vorbisinfo->{tracknumber}, '01', 'vorbisinfo tracknumber';
 is $vorbisinfo->{tracktotal}, '09', 'vorbisinfo tracktotal';
 is $vorbisinfo->{genre}, 'Electro', 'vorbisinfo genre';
 is $vorbisinfo->{file}, 'empty.ogg', 'vorbisinfo path';
+
+is $mp4info->{format}, 'AAC', 'mp4info format';
+is $mp4info->{title}, 'Cellule', 'mp4info title';
+is $mp4info->{artist}, 'Silence', 'mp4info artist';
+is $mp4info->{year}, 2005, 'mp4info year';
+is $mp4info->{album}, 'L\'autre endroit', 'mp4info album';
+is $mp4info->{tracknumber}, '1', 'mp4info tracknumber';
+is $mp4info->{tracktotal}, '9', 'mp4info tracktotal';
+is $mp4info->{genre}, 'Electro', 'mp4info genre';
+is $mp4info->{file}, 'empty.aac', 'mp4info path';
